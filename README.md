@@ -42,6 +42,8 @@ Needs a bit of extra config if you wanted to host this as is - mainly around doz
 ## Tech Stack
 
 - Node.js / Nest.js
+- Better-Auth (?)
+  - as of 3/25, nest integration is wip: https://github.com/better-auth/better-auth/pull/1548
 - PostgreSQL 
 - Sqlite
 - Minio (S3)
