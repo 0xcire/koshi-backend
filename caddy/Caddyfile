@@ -1,0 +1,7 @@
+koshi-dozzle.localhost {
+  reverse_proxy koshi-dozzle:8080
+}
+
+koshi-api.localhost {
+  reverse_proxy koshi-api:1338
+}

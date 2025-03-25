@@ -1,0 +1,16 @@
+services:
+  koshi-api:  
+    # image: ${KOSHI_API_IMAGE:-docker.io/c1re/koshi-api}
+    container_name: koshi-api
+    hostname: koshi-api
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    profiles: ["koshi-api", "all"]
+    ports: 
+      - "1338:1338"
+    networks:
+      - koshi-backend
+    env_file: .env # meh
+    restart: unless-stopped
+
