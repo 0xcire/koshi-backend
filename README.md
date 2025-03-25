@@ -1,7 +1,7 @@
 # koshi-backend
 
-Tesla Go Anywhere for Alternative Fuels
-Api and other infrastructure modules needed to run koshi's backend locally
+Tesla Go Anywhere for Alternative Fuels \
+Api and other infrastructure modules needed to run koshi's backend locally \
 Needs a bit of extra config if you wanted to host this as is - mainly around dozzle and nginx
 
 ## Purpose
