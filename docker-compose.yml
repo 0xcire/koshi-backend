@@ -1,0 +1,16 @@
+name: koshi-backend
+include:
+  - caddy/caddy.yml
+  - dozzle/dozzle.yml
+  - minio/minio.yml
+  - pg/pg.yml
+  - rabbitmq/rabbitmq.yml
+  - redis/redis.yml
+  - koshi-api/koshi-api.yml
+
+networks:
+  koshi-backend:
+    driver: bridge
+
+# volumes:
+  

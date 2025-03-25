@@ -1,0 +1,23 @@
+services:
+  rabbitmq:
+    image: ${RABBITMQ_IMAGE:-rabbitmq:4.0.7-management}
+    container_name: koshi-rabbitmq
+    hostname: koshi-rabbitmq
+    profiles: ["rabbitmq", "all"]
+    environment:
+      RABBITMQ_ERLANG_COOKIE: ${KOSHI_RABBITMQ_ERLANG_COOKIE}
+      RABBITMQ_DEFAULT_USER: ${KOSHI_RABBITMQ_DEFAULT_USER} 
+      RABBITMQ_DEFAULT_PASS: ${KOSHI_RABBITMQ_DEFAULT_PASS} 
+      RABBITMQ_DEFAULT_VHOST: ${KOSHI_RABBITMQ_DEFAULT_VHOST} 
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - koshi-backend
+    volumes:
+      - "./enabled_plugins:/etc/rabbitmq/enabled_plugins"
+      - "./rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro"
+    restart: unless-stopped
+    
+
+  
