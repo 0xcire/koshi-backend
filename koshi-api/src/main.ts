@@ -21,7 +21,7 @@ async function bootstrap() {
     cors: {
       // origin: "https://koshi.cire.sh",
     },
-    bodyParser: true,
+    bodyParser: false, // bodyParser is applied in custom middleware
     bufferLogs: true
   });
   app.useLogger(app.get(Logger))
