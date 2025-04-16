@@ -11,6 +11,7 @@ services:
       - "1338:1338"
     networks:
       - koshi-backend
-    env_file: .env # meh
+    environment:
+      KOSHI_PG_URL: ${KOSHI_PG_URL}
     restart: unless-stopped
 

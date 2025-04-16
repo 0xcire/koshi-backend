@@ -1,15 +1,17 @@
 # koshi-backend
 
-Tesla Go Anywhere for Alternative Fuels \
+Road Trip Planner for Alternative Fuels \
 Api and other infrastructure modules needed to run koshi's backend locally \
-Needs a bit of extra config if you wanted to host this as is - mainly around dozzle and nginx
+Structured this way as it is roughly deployed like this. Can afford to for now, no users \
+LLM/AI Usage: Here, these tools were only used to generate tests based off a very specific prompt. See below.
 
 ## Purpose
 
 - Passion project I've been putting off for a bit
-  - Passion project because I do not see this being practical.
+  - Will stay like this way because I do not see this being practical
   - To reliably get e85 ( an ethanol-fuel mixture ) across long distance road trips would require some miracles, I think. Maybe it works it some scenarios though. We'll see.
-- Enforce everything I learned mainly during internship
+- Enforce everything I learned mainly during internship and showcase
+  - my Propel project is simply not a great showcasing
 
 ## Feature ideas
 

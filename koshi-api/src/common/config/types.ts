@@ -1,4 +1,3 @@
-
 export interface Config {
   email: Email;
   postgres: Postgres;

@@ -19,7 +19,7 @@ function setUpSwaggerUI(app: INestApplication<any>) {
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: {
-      // origin: "https://koshi.cire.sh",
+      // origin: "https://koshi.cire.sh", should be: config.ORIGIN_URL or similar
     },
     bodyParser: true,
     bufferLogs: true
