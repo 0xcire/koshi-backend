@@ -1,26 +1,23 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { Inject, Injectable, Logger, Scope } from '@nestjs/common';
+import { betterAuth } from 'better-auth';
+import { auth } from './auth';
+import { fromNodeHeaders } from 'better-auth/node';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  private readonly logger = new Logger(AuthService.name);
+  // public readonly config: BetterAuthOptions;
+  public readonly auth: ReturnType<typeof betterAuth>;
+
+  constructor(@Inject(REQUEST) private readonly request: Request) {
+    this.auth = auth;
   }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  async getUserSession() {
+    return await this.auth.api.getSession({
+      headers: fromNodeHeaders(this.request.headers),
+    });
   }
 }
