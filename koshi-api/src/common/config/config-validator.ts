@@ -1,38 +1,41 @@
-import z, { ZodError } from "zod";
-import { Config } from "./types";
+import z, { ZodError } from 'zod';
+import { IConfig } from './types';
 
-export const configSchema = z.object({
+export const configSchema: z.ZodType<IConfig> = z.object({
+  port: z.number().min(1),
+  koshi: z.object({
+    clientUrl: z.string().min(1),
+    apiUrl: z.string().min(1),
+  }),
+  smtp: z.object({
+    host: z.string().min(1),
+    port: z.number().min(1),
+    secure: z.boolean(),
+    auth: z.object({
+      user: z.string().min(1),
+      pass: z.string().min(1),
+    }),
+  }),
   email: z.object({
-    resendKey: z.string().min(1),
-    verifyEmail: z.string().min(1),
-    recoveryEmail: z.string().min(1),
+    senderAddress: z.string().min(1),
+  }),
+  secret: z.object({
+    betterAuth: z.string().min(1),
   }),
   redis: z.object({
     host: z.string().min(1),
     username: z.string().min(1),
     password: z.string().min(1),
-    port: z.string().min(1),
+    port: z.number().min(1),
   }),
   postgres: z.object({
-    url: z.string().min(1),
+    connectionString: z.string().min(1),
   }),
-  session: z.object({
-    idleLength: z.number().min(0),
-    preAuthLength: z.number().min(0),
-    absoluteLength: z.number().min(0),
-  }),
-  secret: z.object({
-    preAuthCsrf: z.string().min(1),
-    csrf: z.string().min(1),
-    cookie: z.string().min(1),
-  }),
-  saltRounds: z.number().min(0).max(100),
-  oneHour: z.number().min(0),
 });
 
 const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
   if (issue.code === z.ZodIssueCode.invalid_type) {
-    if (issue.received === "undefined") {
+    if (issue.received === 'undefined') {
       if (issue.path[1]) {
         const path = issue.path;
         return { message: `${path[0]}.${path[1]} is required.` };
@@ -40,14 +43,16 @@ const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
       return { message: `${issue.path[0]} required.` };
     }
 
-    if (issue.expected === "string") {
+    if (issue.expected === 'string') {
       if (issue.path[1]) {
         const path = issue.path;
         return {
           message: `${path[0]}.${path[1]} should be of type ${issue.expected}`,
         };
       }
-      return { message: `${issue.path[0]} should be of type ${issue.expected}` };
+      return {
+        message: `${issue.path[0]} should be of type ${issue.expected}`,
+      };
     }
   }
 
@@ -56,13 +61,11 @@ const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
 
 z.setErrorMap(customErrorMap);
 
-export function validateConfig(config: Config) {
+export function validateConfig(config: IConfig) {
   try {
     configSchema.parse(config);
   } catch (error) {
-    console.log("error:", error);
     if (error instanceof ZodError) {
-      console.log("message:", typeof error.message);
       throw new Error(error.message);
     }
   }
