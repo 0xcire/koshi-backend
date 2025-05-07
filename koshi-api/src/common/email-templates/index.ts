@@ -1,11 +1,25 @@
-export function createVerificationEmail(url: string, token: string) {
-  return `${url} ${token}`;
+import { User } from 'better-auth/types';
+
+export function createVerificationEmail(
+  user: User,
+  url: string,
+  token: string,
+) {
+  return `${user.name} ${url} ${token}`;
 }
 
-export function createChangeEmailVerification(url: string, token: string) {
-  return `${url} ${token}`;
+export function createChangeEmailVerification(
+  user: User,
+  url: string,
+  token: string,
+) {
+  return `${user.name} ${url} ${token}`;
 }
 
-export function createDeleteAccountEmail(url: string, token: string) {
-  return `${url} ${token}`;
+export function createDeleteAccountEmail(
+  user: User,
+  url: string,
+  token: string,
+) {
+  return `${user.name} ${url} ${token}`;
 }
