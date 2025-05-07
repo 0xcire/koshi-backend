@@ -1,10 +1,10 @@
 services:
-  cadddy: 
+  caddy:
     image: caddy:latest
     container_name: koshi-reverse-proxy
     hostname: koshi-reverse-proxy
-    profiles: ["profiles", "all"]
-    ports: 
+    profiles: ["caddy", "all"]
+    ports:
       - "80:80"
       - "443:443"
     volumes:
