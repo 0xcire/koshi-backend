@@ -10,7 +10,7 @@ export class NoAuthBodyParser implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const IS_BETTER_AUTH_API_ROUTE = req.baseUrl.startsWith('/api/auth');
     if (IS_BETTER_AUTH_API_ROUTE) {
-      this.logger.log(
+      this.logger.debug(
         'Deferring body parsing to better-auth for:',
         req.baseUrl,
       );
@@ -23,6 +23,7 @@ export class NoAuthBodyParser implements NestMiddleware {
         next(err); // Pass any errors to the error-handling middleware
         return;
       }
+      this.logger.debug('Handling body parsing for:', req.baseUrl);
       express.urlencoded({ extended: true })(req, res, next);
     });
   }
