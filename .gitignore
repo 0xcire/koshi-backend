@@ -18,3 +18,5 @@ pids
 *.pid.lock
 
 .qodo
+
+containers/pg/init.sql

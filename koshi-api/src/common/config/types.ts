@@ -1,38 +1,52 @@
-export interface Config {
+export interface IConfig {
+  koshi: Koshi;
   email: Email;
+  smtp: Smtp;
   postgres: Postgres;
   redis: Redis;
-  session: Session;
   secret: Secret;
-  saltRounds: number;
-  oneHour: number;
+  port: number;
+}
+
+export interface Koshi {
+  clientUrl: string;
+  apiUrl: string;
+}
+
+export interface Smtp {
+  host: string;
+  port: number;
+  secure: boolean;
+  auth: {
+    user: string;
+    pass: string;
+  };
 }
 
 export interface Email {
-  resendKey: string;
-  recoveryEmail: string;
-  verifyEmail: string;
+  senderAddress: string;
 }
 
 export interface Postgres {
-  url: string;
-}
-
-export interface Session {
-  idleLength: number;
-  absoluteLength: number;
-  preAuthLength: number;
+  connectionString: string;
 }
 
 export interface Redis {
   host: string;
   password: string;
   username: string;
-  port: string;
+  port: number;
 }
 
 export interface Secret {
-  csrf: string;
-  preAuthCsrf: string;
-  cookie: string;
+  betterAuth: string;
+}
+
+export enum ENV {
+  PORT = 'PORT',
+  KOSHI_PG_URL = 'KOSHI_PG_URL',
+}
+
+export enum Config {
+  Port = 'port',
 }
