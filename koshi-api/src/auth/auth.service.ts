@@ -8,7 +8,7 @@ import { Request } from 'express';
 @Injectable({ scope: Scope.REQUEST })
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
-  // public readonly config: BetterAuthOptions;
+  // public readonly config: BetterAuthOptions; TODO: ensure this is necessary
   public readonly auth: ReturnType<typeof betterAuth>;
 
   constructor(@Inject(REQUEST) private readonly request: Request) {

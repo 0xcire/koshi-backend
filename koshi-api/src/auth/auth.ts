@@ -13,11 +13,11 @@ import {
   createVerificationEmail,
 } from '@/common/email-templates';
 
-// TODO``: revisit once https://github.com/better-auth/better-auth/pull/1548 has been merged in
+// TODO: revisit once https://github.com/better-auth/better-auth/pull/1548 has been merged in
 export const auth = betterAuth({
   appName: 'Koshi',
   baseUrl: configInstance.koshi.apiUrl,
-  basePath: '/api/auth',
+  basePath: '/api/auth', // TODO: think this needs to be changed and trustedOrigins added with client
   secret: configInstance.secret.betterAuth,
   database: mikroOrmAdapter(ormSync),
   logger: new Logger('BetterAuth'),
@@ -36,7 +36,6 @@ export const auth = betterAuth({
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }) => {
-      // write some code to send an email
       transporter.sendMail({
         from: configInstance.email.senderAddress,
         to: user.email,
@@ -44,7 +43,7 @@ export const auth = betterAuth({
         html: createVerificationEmail(user, url, token),
       });
     },
-    sendOnSignUp: false, // TODO: revert, just testing for now
+    sendOnSignUp: true,
     autoSignInAfterVerification: true,
     expiresIn: ONE_HOUR_AS_SECONDS,
   },
