@@ -33,6 +33,9 @@ export const config = (): DeepPartial<IConfig> => {
       password: process.env.REDIS_PASSWORD,
       port: parseInt(process.env.PORT as string, 10) || 6379,
     },
+    nrel: {
+      apiKey: process.env.NREL_KEY,
+    },
   };
 };
 

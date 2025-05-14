@@ -31,6 +31,9 @@ export const configSchema: z.ZodType<IConfig> = z.object({
   postgres: z.object({
     connectionString: z.string().min(1),
   }),
+  nrel: z.object({
+    apiKey: z.string().min(1),
+  }),
 });
 
 const customErrorMap: z.ZodErrorMap = (issue, ctx) => {

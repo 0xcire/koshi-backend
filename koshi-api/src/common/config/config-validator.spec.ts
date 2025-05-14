@@ -34,6 +34,9 @@ describe('ConfigValidator', () => {
           pass: 'b',
         },
       },
+      nrel: {
+        apiKey: 'key',
+      },
     };
 
     let validationError = undefined;
@@ -77,6 +80,9 @@ describe('ConfigValidator', () => {
           user: 'a',
           pass: 'b',
         },
+      },
+      nrel: {
+        apiKey: 'key',
       },
     };
 
