@@ -33,6 +33,7 @@ export const configSchema: z.ZodType<IConfig> = z.object({
   }),
   nrel: z.object({
     apiKey: z.string().min(1),
+    baseUrl: z.string().min(1),
   }),
 });
 

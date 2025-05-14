@@ -36,6 +36,7 @@ describe('ConfigValidator', () => {
       },
       nrel: {
         apiKey: 'key',
+        baseUrl: 'url',
       },
     };
 
@@ -83,6 +84,7 @@ describe('ConfigValidator', () => {
       },
       nrel: {
         apiKey: 'key',
+        baseUrl: 'url',
       },
     };
 

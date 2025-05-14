@@ -45,6 +45,7 @@ export interface Secret {
 
 export interface Nrel {
   apiKey: string;
+  baseUrl: string;
 }
 
 export enum ENV {

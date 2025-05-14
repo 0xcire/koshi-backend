@@ -35,6 +35,7 @@ export const config = (): DeepPartial<IConfig> => {
     },
     nrel: {
       apiKey: process.env.NREL_KEY,
+      baseUrl: process.env.NREL_BASE_URl,
     },
   };
 };
