@@ -138,14 +138,14 @@
         },
         "ban_expires": {
           "name": "ban_expires",
-          "type": "date",
+          "type": "timestamptz",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 0,
+          "length": 6,
           "comment": "Date when the user's ban expires",
-          "mappedType": "date"
+          "mappedType": "datetime"
         }
       },
       "name": "users",
@@ -299,25 +299,25 @@
         },
         "access_token_expires_at": {
           "name": "access_token_expires_at",
-          "type": "date",
+          "type": "timestamptz",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 0,
+          "length": 6,
           "comment": "Expiration timestamp for the access token",
-          "mappedType": "date"
+          "mappedType": "datetime"
         },
         "refresh_token_expires_at": {
           "name": "refresh_token_expires_at",
-          "type": "date",
+          "type": "timestamptz",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 0,
+          "length": 6,
           "comment": "Expiration timestamp for the refresh token",
-          "mappedType": "date"
+          "mappedType": "datetime"
         },
         "scope": {
           "name": "scope",
@@ -443,14 +443,14 @@
         },
         "expires_at": {
           "name": "expires_at",
-          "type": "date",
+          "type": "timestamptz",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 0,
+          "length": 6,
           "comment": "Expiration timestamp for the verification token",
-          "mappedType": "date"
+          "mappedType": "datetime"
         }
       },
       "name": "verifications",

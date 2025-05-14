@@ -1,9 +1,9 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20250506011206 extends Migration {
+export class Migration20250513220431 extends Migration {
   override async up(): Promise<void> {
     this.addSql(
-      `create table "users" ("id" varchar(255) not null, "created_at" timestamptz not null, "updated_at" timestamptz not null, "name" varchar(255) not null, "email" varchar(255) not null, "email_verified" boolean not null, "image" varchar(255) null, "username" varchar(255) null, "display_username" varchar(255) null, "role" varchar(255) null, "banned" boolean null, "ban_reason" varchar(255) null, "ban_expires" date null, constraint "users_pkey" primary key ("id"));`,
+      `create table "users" ("id" varchar(255) not null, "created_at" timestamptz not null, "updated_at" timestamptz not null, "name" varchar(255) not null, "email" varchar(255) not null, "email_verified" boolean not null, "image" varchar(255) null, "username" varchar(255) null, "display_username" varchar(255) null, "role" varchar(255) null, "banned" boolean null, "ban_reason" varchar(255) null, "ban_expires" timestamptz null, constraint "users_pkey" primary key ("id"));`,
     );
     this.addSql(
       `comment on column "users"."id" is 'Primary key for the user';`,
@@ -49,7 +49,7 @@ export class Migration20250506011206 extends Migration {
     );
 
     this.addSql(
-      `create table "accounts" ("id" varchar(255) not null, "created_at" timestamptz not null, "updated_at" timestamptz not null, "account_id" varchar(255) not null, "provider_id" varchar(255) not null, "userId" varchar(255) not null, "access_token" varchar(255) null, "refresh_token" varchar(255) null, "id_token" varchar(255) null, "access_token_expires_at" date null, "refresh_token_expires_at" date null, "scope" varchar(255) null, "password" varchar(255) null, constraint "accounts_pkey" primary key ("id"));`,
+      `create table "accounts" ("id" varchar(255) not null, "created_at" timestamptz not null, "updated_at" timestamptz not null, "account_id" varchar(255) not null, "provider_id" varchar(255) not null, "userId" varchar(255) not null, "access_token" varchar(255) null, "refresh_token" varchar(255) null, "id_token" varchar(255) null, "access_token_expires_at" timestamptz null, "refresh_token_expires_at" timestamptz null, "scope" varchar(255) null, "password" varchar(255) null, constraint "accounts_pkey" primary key ("id"));`,
     );
     this.addSql(
       `comment on column "accounts"."id" is 'Primary key for the account';`,
@@ -95,7 +95,7 @@ export class Migration20250506011206 extends Migration {
     );
 
     this.addSql(
-      `create table "verifications" ("id" varchar(255) not null, "created_at" timestamptz not null, "updated_at" timestamptz not null, "identifier" varchar(255) not null, "value" varchar(255) not null, "expires_at" date not null, constraint "verifications_pkey" primary key ("id"));`,
+      `create table "verifications" ("id" varchar(255) not null, "created_at" timestamptz not null, "updated_at" timestamptz not null, "identifier" varchar(255) not null, "value" varchar(255) not null, "expires_at" timestamptz not null, constraint "verifications_pkey" primary key ("id"));`,
     );
     this.addSql(
       `comment on column "verifications"."id" is 'Primary key for the verification record';`,

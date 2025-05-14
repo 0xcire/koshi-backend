@@ -20,7 +20,7 @@ export class Verification extends BaseEntity {
   value!: string;
 
   @Property({
-    type: 'date',
+    type: 'timestamptz',
     comment: 'Expiration timestamp for the verification token',
   })
   expiresAt!: Date;

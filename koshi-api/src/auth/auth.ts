@@ -10,6 +10,7 @@ import { transporter } from '@/nodemailer';
 import {
   createChangeEmailVerification,
   createDeleteAccountEmail,
+  createPasswordResetEmail,
   createVerificationEmail,
 } from '@/common/email-templates';
 
@@ -17,7 +18,7 @@ import {
 export const auth = betterAuth({
   appName: 'Koshi',
   baseUrl: configInstance.koshi.apiUrl,
-  basePath: '/api/auth', // TODO: think this needs to be changed and trustedOrigins added with client
+  trustedOrigins: [configInstance.koshi.clientUrl],
   secret: configInstance.secret.betterAuth,
   database: mikroOrmAdapter(ormSync),
   logger: new Logger('BetterAuth'),
@@ -51,6 +52,14 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: false, // write something custom around this, this is potentially too blocking. for ex. non verified user can sign in but can't generate routes or interact w/ social posts, etc
     autoSignIn: true,
+    sendResetPassword: async ({ user, url, token }, request) => {
+      await transporter.sendMail({
+        from: configInstance.email.senderAddress,
+        to: user.email,
+        subject: 'Koshi Password Recovery',
+        html: createPasswordResetEmail(user, url, token),
+      });
+    },
   },
   user: {
     modelName: 'users',

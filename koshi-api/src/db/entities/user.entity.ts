@@ -61,7 +61,7 @@ export class User extends BaseEntity {
   banReason?: string;
 
   @Property({
-    type: 'date',
+    type: 'timestamptz',
     nullable: true,
     comment: "Date when the user's ban expires",
   })

@@ -23,3 +23,11 @@ export function createDeleteAccountEmail(
 ) {
   return `${user.name} ${url} ${token}`;
 }
+
+export function createPasswordResetEmail(
+  user: User,
+  url: string,
+  token: string,
+) {
+  return `${user.name} ${url} ${token}`;
+}

@@ -6,7 +6,7 @@ export const config = (): DeepPartial<IConfig> => {
   return {
     port: parseInt(process.env.PORT as string, 10) || 1338,
     koshi: {
-      clientUrl: process.env.KOSHI_CLIENT_URL as string,
+      clientUrl: process.env.KOSHI_CLIENT_URL,
       apiUrl: process.env.KOSHI_API_URL,
     },
     smtp: {

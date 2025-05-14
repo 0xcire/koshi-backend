@@ -6,8 +6,8 @@ import { Redis } from 'ioredis';
 // NOTE: fix connect logic
 export const redis = new Redis({
   host: configInstance.redis.host,
-  username: configInstance.redis.username,
-  password: configInstance.redis.password,
+  //username: configInstance.redis.username,
+  //password: configInstance.redis.password,
   port: configInstance.redis.port,
 
   enableOfflineQueue: false,

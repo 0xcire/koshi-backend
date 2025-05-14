@@ -40,14 +40,14 @@ export class Account extends BaseEntity {
   idToken?: string;
 
   @Property({
-    type: 'date',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Expiration timestamp for the access token',
   })
   accessTokenExpiresAt?: Date;
 
   @Property({
-    type: 'date',
+    type: 'timestamptz',
     nullable: true,
     comment: 'Expiration timestamp for the refresh token',
   })
