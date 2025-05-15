@@ -1,7 +1,6 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthService } from './auth/auth.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { LoggerModule } from 'nestjs-pino';
 import { NodeEnvironment } from './types';
@@ -11,6 +10,8 @@ import { config } from './common/config';
 import mikroConfig from './db/mikro-orm.config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { IConfig } from './common/config/types';
+import { NrelModule } from './nrel/nrel.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -47,11 +48,13 @@ import { IConfig } from './common/config/types';
       inject: [ConfigService],
     }),
     MikroOrmModule.forRoot(mikroConfig),
+    ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
+    NrelModule,
   ],
   controllers: [],
-  providers: [AuthService],
+  providers: [],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
