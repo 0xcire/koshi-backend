@@ -1,7 +1,8 @@
-import { Station } from './types';
+import { Station } from '@/db/entities';
 
 export interface INrelService {
   syncStations(): Promise<void>;
-  //getAllStations(): Promise<Array<Station>>; // TODO: change return type
-  //getLastUpdatedDate(): Promise<Date>;
+  getAllUpstreamStations(): Promise<Array<Station>>;
+  getLocalLastUpdatedAt(): Promise<Date | undefined>;
+  getUpstreamLastUpdatedAt(): Promise<Date>;
 }
