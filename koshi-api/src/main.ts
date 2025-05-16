@@ -29,6 +29,8 @@ async function bootstrap() {
   });
   app.useLogger(app.get(Logger));
 
+  app.enableShutdownHooks();
+
   await setUpSwaggerUI(app);
 
   const logger = new NestLogger('Application');
