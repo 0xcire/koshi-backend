@@ -12,6 +12,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { IConfig } from './common/config/types';
 import { NrelModule } from './nrel/nrel.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { CacheModule } from '@nestjs/cache-manager';
+import { createKeyv } from '@keyv/redis';
 
 @Module({
   imports: [
@@ -27,6 +29,16 @@ import { ScheduleModule } from '@nestjs/schedule';
             ? { target: 'pino-pretty' }
             : undefined,
       },
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: async (configService: ConfigService<IConfig>) => {
+        const r = <IConfig['redis']>configService.get('redis', { infer: true });
+        return {
+          stores: [createKeyv(`redis://${r.host}:${r.port}`)],
+        };
+      },
+      inject: [ConfigService],
     }),
     MailerModule.forRootAsync({
       useFactory: (configService: ConfigService<IConfig>) => {

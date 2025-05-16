@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -23,13 +28,15 @@ import {
   NrelEndpoints,
   ResponseFormat,
 } from './types';
+import { ONE_HOUR_AS_MS } from '@/types';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import SuperJSON from 'superjson';
 
 /*
  *  Service to handle sync between local db and nrel db for e85 fuel stations - cut down api requests
  *  Runs update check every week and acts accordingly
  *  provides fuel station data for display on map and routing
- *  // TODO: add caching in front of stations for above ^
- *  // TODO: sync should eventually be worked off w/ mq
  * */
 @Injectable()
 export class NrelService implements OnApplicationBootstrap, INrelService {
@@ -40,6 +47,7 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
   constructor(
     private readonly configService: ConfigService<IConfig>,
     private readonly httpService: HttpService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly em: EntityManager,
     @InjectRepository(Station)
     private readonly stationRepository: EntityRepository<Station>,
@@ -50,6 +58,7 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
     this.apiKey = this.configService.get('nrel.apiKey', { infer: true });
   }
 
+  @CreateRequestContext()
   async onApplicationBootstrap() {
     await this.syncStations();
   }
@@ -58,9 +67,6 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async syncStations(): Promise<void> {
     try {
-      const localData = await this.localStationsTableHasData();
-      if (localData) return; // on start up if there is data, wait till next interval to run sync
-
       const [localLastUpdatedAt, upstreamLastUpdatedAt] = await Promise.all([
         this.getLocalLastUpdatedAt(),
         this.getUpstreamLastUpdatedAt(),
@@ -71,6 +77,7 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
 
       const stations = await this.getAllUpstreamStations();
 
+      await this.writeStationsToCache(stations);
       await this.syncData(stations);
     } catch (error) {
       if (error instanceof DriverException) {
@@ -78,12 +85,39 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
       }
 
       if (error instanceof Error) {
-        this.logger.error('Manual intervention required.');
+        this.logger.error(error.message);
       }
     }
   }
 
-  async getAllUpstreamStations() {
+  async getAllStations(): Promise<Station[]> {
+    const cachedStations: string | null =
+      await this.cacheManager.get('stations');
+
+    if (cachedStations) {
+      this.logger.log('Cache Hit - Stations');
+      return SuperJSON.parse(cachedStations);
+    }
+
+    this.logger.log('Cache Miss - Stations');
+
+    const stations = await this.stationRepository.findAll();
+
+    await this.writeStationsToCache(stations);
+
+    return stations;
+  }
+
+  private async writeStationsToCache(stations: Station[]): Promise<void> {
+    this.logger.log('Writing stations to cache');
+    await this.cacheManager.set(
+      'stations',
+      SuperJSON.stringify(stations),
+      ONE_HOUR_AS_MS,
+    );
+  }
+
+  async getAllUpstreamStations(): Promise<Station[]> {
     return await firstValueFrom(
       this.httpService
         .get<GetAllStationsResponse>(
@@ -101,6 +135,7 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
         )
         .pipe(
           catchError((error: AxiosError) => {
+            // TODO: handle this
             this.logger.error(error.response?.data);
             throw 'An Error Happened';
           }),
@@ -109,7 +144,11 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
   }
 
   async getLocalLastUpdatedAt(): Promise<Date | undefined> {
-    const res = await this.syncRunRepository.findAll();
+    const res = await this.syncRunRepository
+      .createQueryBuilder()
+      .select('*')
+      .limit(1);
+
     if (res.length === 0) return undefined;
 
     return res[0].lastUpdatedAt;
@@ -151,16 +190,10 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
     return false;
   }
 
-  private async localStationsTableHasData(): Promise<boolean> {
-    const x = await this.stationRepository
-      .createQueryBuilder()
-      .select('id')
-      .limit(1);
-
-    return x.length === 1;
-  }
-
-  private async syncData(stations: Station[]) {
+  /**
+   *  NREL only supplies a last updated date but no subset of updated data otherwise would utilize upsert
+   */
+  private async syncData(stations: Station[]): Promise<void> {
     try {
       await Promise.all([
         this.syncRunRepository.createQueryBuilder().truncate(),
