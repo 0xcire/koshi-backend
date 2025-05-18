@@ -1,7 +1,6 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthService } from './auth/auth.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { LoggerModule } from 'nestjs-pino';
 import { NodeEnvironment } from './types';
@@ -11,6 +10,10 @@ import { config } from './common/config';
 import mikroConfig from './db/mikro-orm.config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { IConfig } from './common/config/types';
+import { NrelModule } from './nrel/nrel.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CacheModule } from '@nestjs/cache-manager';
+import { createKeyv } from '@keyv/redis';
 
 @Module({
   imports: [
@@ -26,6 +29,16 @@ import { IConfig } from './common/config/types';
             ? { target: 'pino-pretty' }
             : undefined,
       },
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: async (configService: ConfigService<IConfig>) => {
+        const r = <IConfig['redis']>configService.get('redis', { infer: true });
+        return {
+          stores: [createKeyv(`redis://${r.host}:${r.port}`)],
+        };
+      },
+      inject: [ConfigService],
     }),
     MailerModule.forRootAsync({
       useFactory: (configService: ConfigService<IConfig>) => {
@@ -47,11 +60,13 @@ import { IConfig } from './common/config/types';
       inject: [ConfigService],
     }),
     MikroOrmModule.forRoot(mikroConfig),
+    ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
+    NrelModule,
   ],
   controllers: [],
-  providers: [AuthService],
+  providers: [],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

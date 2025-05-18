@@ -6,6 +6,7 @@ export interface IConfig {
   redis: Redis;
   secret: Secret;
   port: number;
+  nrel: Nrel;
 }
 
 export interface Koshi {
@@ -40,6 +41,11 @@ export interface Redis {
 
 export interface Secret {
   betterAuth: string;
+}
+
+export interface Nrel {
+  apiKey: string;
+  baseUrl: string;
 }
 
 export enum ENV {

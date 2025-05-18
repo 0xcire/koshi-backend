@@ -7,9 +7,10 @@ import * as entities from './entities/';
 
 export const baseCfg: PostgreSqlOptions = {
   driver: PostgreSqlDriver,
+  forceUtcTimezone: true,
   clientUrl: configInstance.postgres.connectionString,
   ...(process.env.NODE_ENV === NodeEnvironment.Dev && {
-    logger: (msg) => console.log('[MikroORM]', msg),
+    logger: (msg: unknown) => console.log('[MikroORM]', msg),
     verbose: true,
     debug: true,
   }),
@@ -24,6 +25,7 @@ export const cfg: PostgreSqlOptions = {
     pathTs: './src/db/migrations',
     path: './dist/src/db/migrations',
     transactional: true,
+    allOrNothing: true,
   },
 };
 
