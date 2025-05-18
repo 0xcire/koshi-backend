@@ -14,6 +14,7 @@ import { NrelModule } from './nrel/nrel.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CacheModule } from '@nestjs/cache-manager';
 import { createKeyv } from '@keyv/redis';
+import { VehiclesModule } from './vehicles/vehicles.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { createKeyv } from '@keyv/redis';
     AuthModule,
     UsersModule,
     NrelModule,
+    VehiclesModule,
   ],
   controllers: [],
   providers: [],

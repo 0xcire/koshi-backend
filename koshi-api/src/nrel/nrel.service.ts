@@ -36,7 +36,7 @@ import SuperJSON from 'superjson';
 
 /*
  *  Service to handle sync between local db and nrel db for e85 fuel stations - cut down api requests
- *  Runs update check every week and acts accordingly
+ *  Runs update check every day and acts accordingly
  *  provides fuel station data for display on map and routing
  * */
 @Injectable()
@@ -90,6 +90,8 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
         this.logger.error(error.response?.data);
 
         if (error.response?.status === 429) {
+          // TODO: can't imagine I hit the RL but handle gracefully in combination with axios-retry
+          this.logger.error('Hit Rate Limit on NREL Upstream');
         }
       }
 
