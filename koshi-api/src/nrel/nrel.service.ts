@@ -26,6 +26,7 @@ import {
   GetAllStationsResponse,
   GetLastUpdatedResponse,
   NrelEndpoints,
+  NrelLog,
   ResponseFormat,
 } from './types';
 import { ONE_HOUR_AS_MS } from '@/types';
@@ -84,6 +85,14 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
         this.logger.error(error.message);
       }
 
+      if (error instanceof AxiosError) {
+        this.logger.error(error.message);
+        this.logger.error(error.response?.data);
+
+        if (error.response?.status === 429) {
+        }
+      }
+
       if (error instanceof Error) {
         this.logger.error(error.message);
       }
@@ -95,26 +104,15 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
       await this.cacheManager.get('stations');
 
     if (cachedStations) {
-      this.logger.log('Cache Hit - Stations');
+      this.logger.log(NrelLog.CacheHit);
       return SuperJSON.parse(cachedStations);
     }
 
-    this.logger.log('Cache Miss - Stations');
-
+    this.logger.log(NrelLog.CacheMiss);
     const stations = await this.stationRepository.findAll();
-
     await this.writeStationsToCache(stations);
 
     return stations;
-  }
-
-  private async writeStationsToCache(stations: Station[]): Promise<void> {
-    this.logger.log('Writing stations to cache');
-    await this.cacheManager.set(
-      'stations',
-      SuperJSON.stringify(stations),
-      ONE_HOUR_AS_MS,
-    );
   }
 
   async getAllUpstreamStations(): Promise<Station[]> {
@@ -135,19 +133,14 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
         )
         .pipe(
           catchError((error: AxiosError) => {
-            // TODO: handle this
-            this.logger.error(error.response?.data);
-            throw 'An Error Happened';
+            throw error;
           }),
         ),
     );
   }
 
   async getLocalLastUpdatedAt(): Promise<Date | undefined> {
-    const res = await this.syncRunRepository
-      .createQueryBuilder()
-      .select('*')
-      .limit(1);
+    const res = await this.syncRunRepository.findAll();
 
     if (res.length === 0) return undefined;
 
@@ -163,8 +156,7 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
         .pipe(map((response) => response.data.last_updated))
         .pipe(
           catchError((error: AxiosError) => {
-            this.logger.error(error.response?.data);
-            throw 'Fix this error output';
+            throw error;
           }),
         ),
     );
@@ -177,23 +169,33 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
     localLastUpdatedAt?: Date,
   ): boolean {
     if (!localLastUpdatedAt) {
-      this.logger.log('No local sync run detected. Initiating sync process.');
+      this.logger.log(NrelLog.NoLocalSync);
       return true;
     }
 
     if (upstreamLastUpdatedAt.valueOf() > localLastUpdatedAt.valueOf()) {
-      this.logger.log('Upstream changes detected. Initiating sync process.');
+      this.logger.log(NrelLog.UpstreamAhead);
       return true;
     }
 
-    this.logger.log('No upstream changes detected. Ignoring sync process.');
+    this.logger.log(NrelLog.NoUpstream);
     return false;
+  }
+
+  private async writeStationsToCache(stations: Station[]): Promise<void> {
+    this.logger.log(NrelLog.WriteToCache);
+    await this.cacheManager.set(
+      'stations',
+      SuperJSON.stringify(stations),
+      ONE_HOUR_AS_MS,
+    );
   }
 
   /**
    *  NREL only supplies a last updated date but no subset of updated data otherwise would utilize upsert
+   * ~ 4500 rows
    */
-  private async syncData(stations: Station[]): Promise<void> {
+  async syncData(stations: Station[]): Promise<void> {
     try {
       await Promise.all([
         this.syncRunRepository.createQueryBuilder().truncate(),

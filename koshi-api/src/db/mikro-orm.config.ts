@@ -10,7 +10,7 @@ export const baseCfg: PostgreSqlOptions = {
   forceUtcTimezone: true,
   clientUrl: configInstance.postgres.connectionString,
   ...(process.env.NODE_ENV === NodeEnvironment.Dev && {
-    logger: (msg) => console.log('[MikroORM]', msg),
+    logger: (msg: unknown) => console.log('[MikroORM]', msg),
     verbose: true,
     debug: true,
   }),

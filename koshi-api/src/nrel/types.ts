@@ -31,3 +31,12 @@ export interface GetAllStationsResponse {
 export interface GetLastUpdatedResponse {
   last_updated: string;
 }
+
+export enum NrelLog {
+  'NoLocalSync' = 'No local sync run detected. Initiating sync process.',
+  'WriteToCache' = 'Writing stations to cache',
+  'UpstreamAhead' = 'Upstream changes detected. Initiating sync process.',
+  'NoUpstream' = 'No upstream changes detected. Ignoring sync process.',
+  'CacheHit' = 'Cache Hit - Stations',
+  'CacheMiss' = 'Cache Miss - Stations',
+}
