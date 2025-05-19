@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger as NestLogger } from '@nestjs/common';
+import { Logger as NestLogger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import type { INestApplication } from '@nestjs/common';
@@ -30,8 +30,8 @@ async function bootstrap() {
     bufferLogs: true,
   });
   app.useLogger(app.get(Logger));
-
   app.enableShutdownHooks();
+  app.useGlobalPipes(new ValidationPipe());
 
   await setUpSwaggerUI(app);
 
