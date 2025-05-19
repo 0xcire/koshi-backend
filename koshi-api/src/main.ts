@@ -71,6 +71,11 @@ async function setUpSwaggerUI(app: INestApplication<any>) {
     for (const method in paths[path]) {
       //@ts-expect-error mmm
       paths[path][method].tags = ['better auth'];
+
+      if (path.includes('admin')) {
+        //@ts-expect-error mmm
+        paths[path][method].tags = ['better auth - admin'];
+      }
     }
   }
 
