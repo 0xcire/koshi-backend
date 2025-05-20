@@ -1,23 +1,9 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20250519011507_vehicles extends Migration {
+export class Migration20250519032526_vehicles extends Migration {
   override async up(): Promise<void> {
     this.addSql(
-      `create table "vehicles" 
-        ("id" varchar(255) not null, 
-        "created_at" timestamptz not null, 
-        "updated_at" timestamptz not null, 
-        "make" varchar(255) not null, 
-        "model" varchar(255) not null, 
-        "year" smallint not null, 
-        "fuel_type" varchar(255) not null, 
-        "fuel_tank_size" varchar(255) not null, 
-        "appx_fuel_efficiency" real not null, 
-        "mileage" int not null, 
-        "vin" varchar(17) null, 
-        "user_id" varchar(255) not null, 
-        constraint "vehicles_pkey" primary key ("id"));
-      `,
+      `create table "vehicles" ("id" varchar(255) not null, "created_at" timestamptz not null, "updated_at" timestamptz not null, "make" varchar(255) not null, "model" varchar(255) not null, "year" smallint not null, "fuel_type" varchar(16) not null, "fuel_tank_size" real not null, "appx_fuel_efficiency" real not null, "mileage" int not null, "vin" varchar(17) null, "user_id" varchar(255) not null, constraint "vehicles_pkey" primary key ("id"));`,
     );
     this.addSql(
       `comment on column "vehicles"."id" is 'Primary key for the vehicle';`,

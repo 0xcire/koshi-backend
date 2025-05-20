@@ -75,6 +75,8 @@ export class User extends BaseEntity {
   })
   banExpires?: Date;
 
-  @OneToMany(() => Vehicle, (vehicle) => vehicle.user, { orphanRemoval: true })
+  @OneToMany(() => Vehicle, (vehicle) => vehicle.user, {
+    orphanRemoval: true,
+  })
   vehicles = new Collection<Vehicle>(this);
 }
