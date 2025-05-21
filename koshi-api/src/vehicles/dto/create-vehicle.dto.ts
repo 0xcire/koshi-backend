@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, Length, Max } from 'class-validator';
+import { IsNumber, Length, Max } from 'class-validator';
 
 export class CreateVehicleDto {
   @Length(1, 255)
@@ -22,7 +22,6 @@ export class CreateVehicleDto {
   @Max(2_000_000)
   mileage!: number;
 
-  @IsOptional()
   @Length(1, 17)
-  vin?: string;
+  vin!: string;
 }

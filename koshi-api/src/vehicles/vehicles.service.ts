@@ -1,26 +1,145 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
+import {
+  EntityManager,
+  EntityRepository,
+  NotFoundError,
+} from '@mikro-orm/postgresql';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { Vehicle } from '../db/entities';
+import { tryCatch } from '../common/utils/try-catch';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { CacheableEntities, ONE_HOUR_AS_MS } from '../types';
+import { getCacheKey } from '../common/utils/cache-key';
 
 @Injectable()
 export class VehiclesService {
-  create(createVehicleDto: CreateVehicleDto) {
-    return 'This action adds a new vehicle';
+  private readonly logger = new Logger(VehiclesService.name);
+
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly em: EntityManager,
+    @InjectRepository(Vehicle)
+    private readonly vehiclesRepository: EntityRepository<Vehicle>,
+  ) {}
+
+  async create(userId: string, createVehicleDto: CreateVehicleDto) {
+    const vehicle = this.vehiclesRepository.create({
+      ...createVehicleDto,
+      user: userId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    this.logger.log(`Creating new vehicle: ${vehicle} for user: ${userId}`);
+
+    await this.em.flush();
+
+    await this.cacheManager.set(
+      JSON.stringify(getCacheKey(vehicle.id, userId)),
+      vehicle,
+      ONE_HOUR_AS_MS,
+    );
+
+    return { vehicle };
   }
 
-  findAll() {
-    return `This action returns all vehicles`;
+  /**
+   * Amount of vehicles is roughly controlled via a required VIN when creating
+   * can't imagine this would exceed ~5 for a user
+   */
+  async findAll(userId: string) {
+    const cachedVehicles = await this.cacheManager.get(
+      JSON.stringify(getCacheKey(CacheableEntities.Vehicles, userId)),
+    );
+
+    if (cachedVehicles) {
+      this.logger.log('Cache hit - Vehicles');
+      return cachedVehicles;
+    }
+
+    this.logger.log('Cache miss - Vehicles');
+
+    const vehicles = await this.vehiclesRepository.findAll({
+      where: { user: userId },
+    });
+
+    await this.cacheManager.set(
+      JSON.stringify(getCacheKey(CacheableEntities.Vehicles, userId)),
+      vehicles,
+      ONE_HOUR_AS_MS,
+    );
+
+    this.logger.log(`Found ${vehicles.length} vehicles for user: å${userId}`);
+    return { vehicles };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} vehicle`;
+  async findOne(userId: string, id: string) {
+    const cachedVehicle: Vehicle | null = await this.cacheManager.get(
+      JSON.stringify(getCacheKey(id, userId)),
+    );
+
+    if (cachedVehicle) {
+      this.logger.log('Serving cached vehicle');
+      return { vehicle: cachedVehicle };
+    }
+
+    const findOneOrFailPromise = this.vehiclesRepository.findOneOrFail({
+      id,
+      user: {
+        id: userId,
+      },
+    });
+    const { data: vehicle, error } = await tryCatch(findOneOrFailPromise);
+
+    if (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+
+      throw error;
+    }
+
+    await this.cacheManager.set(
+      JSON.stringify(getCacheKey(vehicle.id, userId)),
+      vehicle,
+      ONE_HOUR_AS_MS,
+    );
+
+    this.logger.log(`Found vehicle by id: ${id}`);
+
+    return { vehicle };
   }
 
-  update(id: number, updateVehicleDto: UpdateVehicleDto) {
-    return `This action updates a #${id} vehicle`;
+  async update(userId: string, id: string, updateVehicleDto: UpdateVehicleDto) {
+    const { vehicle } = await this.findOne(userId, id);
+
+    const updatedVehicle = this.vehiclesRepository.assign(
+      vehicle,
+      updateVehicleDto,
+    );
+
+    await this.em.flush();
+
+    await this.cacheManager.set(
+      JSON.stringify(getCacheKey(vehicle.id, userId)),
+      vehicle,
+      ONE_HOUR_AS_MS,
+    );
+
+    this.logger.log(
+      `Updating existing vehicle: ${vehicle} with new data: ${updateVehicleDto}`,
+    );
+
+    return { vehicle: updatedVehicle };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} vehicle`;
+  async remove(userId: string, id: string) {
+    this.logger.log(`Removed vehicle by id: ${id}`);
+
+    await this.vehiclesRepository.nativeDelete({ id });
+    await this.cacheManager.del(JSON.stringify(getCacheKey(id, userId)));
   }
 }
