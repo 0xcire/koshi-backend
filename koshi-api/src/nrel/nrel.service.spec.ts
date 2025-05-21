@@ -6,14 +6,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import {
-  EntityManager,
-  EntityRepository,
-  PostgreSqlDriver,
-} from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import { getRepositoryToken } from '@mikro-orm/nestjs';
-import * as entities from '@/db/entities';
-import { defineConfig, MikroORM } from '@mikro-orm/core';
 import { of } from 'rxjs';
 import { AxiosRequestHeaders, AxiosResponse } from 'axios';
 import {
@@ -21,15 +15,84 @@ import {
   GetLastUpdatedResponse,
   NrelLog,
 } from './types';
+import { em } from '@/common/test-utils/modules';
 
-const testCfg = {
-  connect: false,
-  driver: PostgreSqlDriver,
-  clientUrl: 'postgresql://user:pass@localhost/test_db',
-  schema: 'test',
-  entities: Object.values(entities),
-  allowGlobalContext: true,
-};
+const stations = [
+  {
+    access_code: 'public',
+    access_days_time: '24 hours daily',
+    access_detail_code: null,
+    cards_accepted: 'A Cash Checks CREDIT D Debit M V Voyager Wright_Exp',
+    date_last_confirmed: '2024-07-11',
+    expected_date: null,
+    fuel_type_code: 'E85',
+    groups_with_access_code: 'Public',
+    id: 1447,
+    maximum_vehicle_class: 'MD',
+    open_date: '1993-11-15',
+    owner_type_code: 'P',
+    restricted_access: false,
+    status_code: 'E',
+    funding_sources: null,
+    facility_type: 'COOP',
+    station_name: 'Sioux Valley Co-op - Cenex',
+    station_phone: '605-886-5829',
+    updated_at: '2025-02-12T00:16:32Z',
+    geocode_status: '200-9',
+    latitude: 44.904113,
+    longitude: -97.130798,
+    city: 'Watertown',
+    country: 'US',
+    intersection_directions: 'On Highway 20 at 3rd Street NW',
+    plus4: null,
+    state: 'SD',
+    street_address: '220 10th St NW',
+    zip: '57201',
+    bd_blends: null,
+    cng_dispenser_num: null,
+    cng_fill_type_code: null,
+    cng_has_rng: null,
+    cng_psi: null,
+    cng_renewable_source: null,
+    cng_total_compression: null,
+    cng_total_storage: null,
+    cng_vehicle_class: null,
+    e85_blender_pump: true,
+    e85_other_ethanol_blends: ['E30-E35'],
+    ev_connector_types: null,
+    ev_dc_fast_num: null,
+    ev_level1_evse_num: null,
+    ev_level2_evse_num: null,
+    ev_network: null,
+    ev_network_web: null,
+    ev_other_evse: null,
+    ev_pricing: null,
+    ev_renewable_source: null,
+    ev_workplace_charging: null,
+    hy_is_retail: null,
+    hy_pressures: null,
+    hy_standards: null,
+    hy_status_link: null,
+    lng_has_rng: null,
+    lng_renewable_source: null,
+    lng_vehicle_class: null,
+    lpg_nozzle_types: null,
+    lpg_primary: null,
+    ng_fill_type_code: null,
+    ng_psi: null,
+    ng_vehicle_class: null,
+    rd_blended_with_biodiesel: null,
+    rd_blends: null,
+    rd_blends_fr: null,
+    rd_max_biodiesel_level: null,
+    nps_unit_name: null,
+    access_days_time_fr: null,
+    intersection_directions_fr: null,
+    bd_blends_fr: null,
+    groups_with_access_code_fr: 'Public',
+    ev_pricing_fr: null,
+  },
+];
 
 const getUpstreamLastUpdatedResponse: AxiosResponse<
   GetLastUpdatedResponse,
@@ -60,82 +123,7 @@ const getUpstreamStationsResponse: AxiosResponse<GetAllStationsResponse, any> =
       },
       station_locator_url: 'localhost:1234',
       total_results: 1,
-      fuel_stations: [
-        {
-          access_code: 'public',
-          access_days_time: '24 hours daily',
-          access_detail_code: null,
-          cards_accepted: 'A Cash Checks CREDIT D Debit M V Voyager Wright_Exp',
-          date_last_confirmed: '2024-07-11',
-          expected_date: null,
-          fuel_type_code: 'E85',
-          groups_with_access_code: 'Public',
-          id: 1447,
-          maximum_vehicle_class: 'MD',
-          open_date: '1993-11-15',
-          owner_type_code: 'P',
-          restricted_access: false,
-          status_code: 'E',
-          funding_sources: null,
-          facility_type: 'COOP',
-          station_name: 'Sioux Valley Co-op - Cenex',
-          station_phone: '605-886-5829',
-          updated_at: '2025-02-12T00:16:32Z',
-          geocode_status: '200-9',
-          latitude: 44.904113,
-          longitude: -97.130798,
-          city: 'Watertown',
-          country: 'US',
-          intersection_directions: 'On Highway 20 at 3rd Street NW',
-          plus4: null,
-          state: 'SD',
-          street_address: '220 10th St NW',
-          zip: '57201',
-          bd_blends: null,
-          cng_dispenser_num: null,
-          cng_fill_type_code: null,
-          cng_has_rng: null,
-          cng_psi: null,
-          cng_renewable_source: null,
-          cng_total_compression: null,
-          cng_total_storage: null,
-          cng_vehicle_class: null,
-          e85_blender_pump: true,
-          e85_other_ethanol_blends: ['E30-E35'],
-          ev_connector_types: null,
-          ev_dc_fast_num: null,
-          ev_level1_evse_num: null,
-          ev_level2_evse_num: null,
-          ev_network: null,
-          ev_network_web: null,
-          ev_other_evse: null,
-          ev_pricing: null,
-          ev_renewable_source: null,
-          ev_workplace_charging: null,
-          hy_is_retail: null,
-          hy_pressures: null,
-          hy_standards: null,
-          hy_status_link: null,
-          lng_has_rng: null,
-          lng_renewable_source: null,
-          lng_vehicle_class: null,
-          lpg_nozzle_types: null,
-          lpg_primary: null,
-          ng_fill_type_code: null,
-          ng_psi: null,
-          ng_vehicle_class: null,
-          rd_blended_with_biodiesel: null,
-          rd_blends: null,
-          rd_blends_fr: null,
-          rd_max_biodiesel_level: null,
-          nps_unit_name: null,
-          access_days_time_fr: null,
-          intersection_directions_fr: null,
-          bd_blends_fr: null,
-          groups_with_access_code_fr: 'Public',
-          ev_pricing_fr: null,
-        },
-      ],
+      fuel_stations: stations,
     },
     headers: {},
     config: {
@@ -154,8 +142,6 @@ describe('NrelService', () => {
   let cacheManager: DeepMocked<Cache>;
   let stationRepository: DeepMocked<EntityRepository<Station>>;
   let syncRunRepository: DeepMocked<EntityRepository<SyncRun>>;
-  const orm = MikroORM.initSync(defineConfig(testCfg));
-  let em = orm.em;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -196,7 +182,6 @@ describe('NrelService', () => {
     logger = jest.spyOn(service['logger'], 'log');
     httpService = module.get(HttpService);
     cacheManager = module.get(CACHE_MANAGER);
-    em = module.get(EntityManager);
     stationRepository = module.get(getRepositoryToken(Station));
     syncRunRepository = module.get(getRepositoryToken(SyncRun));
   });
@@ -215,6 +200,7 @@ describe('NrelService', () => {
     httpService.get
       .mockReturnValueOnce(of(getUpstreamLastUpdatedResponse))
       .mockReturnValueOnce(of(getUpstreamStationsResponse));
+
     jest.spyOn(service, 'syncData').mockImplementation(async () => undefined);
     const run = jest.spyOn(service, 'syncData');
 
@@ -222,6 +208,7 @@ describe('NrelService', () => {
 
     expect(logger).toHaveBeenNthCalledWith(1, NrelLog.NoLocalSync);
     expect(logger).toHaveBeenNthCalledWith(2, NrelLog.WriteToCache);
+
     expect(run).toHaveBeenCalledTimes(1);
   });
 
@@ -238,6 +225,7 @@ describe('NrelService', () => {
 
     expect(logger).toHaveBeenNthCalledWith(1, NrelLog.UpstreamAhead);
     expect(logger).toHaveBeenNthCalledWith(2, NrelLog.WriteToCache);
+
     expect(syncData).toHaveBeenCalledTimes(1);
   });
 

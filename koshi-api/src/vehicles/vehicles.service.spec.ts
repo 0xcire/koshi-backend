@@ -9,7 +9,6 @@ import {
   FilterQuery,
   FindAllOptions,
   FindOneOrFailOptions,
-  wrap,
 } from '@mikro-orm/postgresql';
 import { Vehicle } from '../db/entities';
 import { em } from '@/common/test-utils/modules';
@@ -18,6 +17,7 @@ import { CacheableEntities, ONE_HOUR_AS_MS } from '../types';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { tryCatch } from '../common/utils/try-catch';
+import { VehicleLog } from './types';
 
 const MOCK_USER_ID = 'user-id';
 const mockUserVehicle = {
@@ -43,9 +43,9 @@ const mockUpdateVehicleDto: UpdateVehicleDto = {
   mileage: 275000,
 };
 
-// TODO: refactor
 describe('VehiclesService', () => {
   let service: VehiclesService;
+  let logger: unknown;
   let cacheManager: DeepMocked<Cache>;
   let mockVehicleRepository: DeepMocked<EntityRepository<Vehicle>>;
 
@@ -69,6 +69,7 @@ describe('VehiclesService', () => {
     }).compile();
 
     service = module.get<VehiclesService>(VehiclesService);
+    logger = jest.spyOn(service['logger'], 'log');
     cacheManager = module.get(CACHE_MANAGER);
     mockVehicleRepository = module.get(getRepositoryToken(Vehicle));
   });
@@ -82,7 +83,6 @@ describe('VehiclesService', () => {
     expect(service).toBeDefined();
   });
 
-  // TODO: fix nrel service spys on createMock() methods
   it("should find all user's vehicles - cache miss", async () => {
     const repositorySpy = mockVehicleRepository.findAll;
     const cacheSpy = cacheManager.set;
@@ -107,6 +107,12 @@ describe('VehiclesService', () => {
       [mockUserVehicle],
       ONE_HOUR_AS_MS,
     );
+
+    expect(logger).toHaveBeenNthCalledWith(1, VehicleLog.CacheMiss);
+    expect(logger).toHaveBeenNthCalledWith(
+      2,
+      `Found 1 vehicles for user: user-id`,
+    );
   });
 
   it("should find all user's vehicles - cache hit", async () => {
@@ -119,12 +125,15 @@ describe('VehiclesService', () => {
     expect(spy).toHaveBeenCalledWith(
       getCacheKey(CacheableEntities.Vehicles, MOCK_USER_ID),
     );
+
+    expect(logger).toHaveBeenCalledWith(VehicleLog.CacheHit);
   });
 
   it('should find one vehicle - cache miss', async () => {
     const repositorySpy = mockVehicleRepository.findOneOrFail;
     const cacheSpy = cacheManager.set;
     cacheManager.get.mockResolvedValue(null);
+    // TODO: refactor out if used elsewhere
     mockVehicleRepository.findOneOrFail.mockImplementation(
       async (
         where: FilterQuery<Vehicle>,
@@ -152,6 +161,8 @@ describe('VehiclesService', () => {
       mockUserVehicle,
       ONE_HOUR_AS_MS,
     );
+
+    expect(logger).toHaveBeenCalledWith(VehicleLog.CacheMiss);
   });
 
   it('should find one vehicle - cache hit', async () => {
@@ -164,6 +175,8 @@ describe('VehiclesService', () => {
     expect(spy).toHaveBeenCalledWith(
       getCacheKey(mockUserVehicle.id, MOCK_USER_ID),
     );
+
+    expect(logger).toHaveBeenCalledWith(VehicleLog.CacheHit);
   });
 
   it('should update vehicle', async () => {
@@ -172,7 +185,7 @@ describe('VehiclesService', () => {
     const cacheSpy = cacheManager.set;
 
     mockVehicleRepository.assign.mockImplementation(
-      //@ts-expect-error type
+      // @ts-expect-error type
       () => Object.assign(mockUserVehicle, mockUpdateVehicleDto),
     );
 
@@ -200,6 +213,10 @@ describe('VehiclesService', () => {
       ONE_HOUR_AS_MS,
     );
     expect(res).toEqual({ vehicle: updatedVehicle });
+
+    expect(logger).toHaveBeenCalledWith(
+      `Updating existing vehicle: ${mockUserVehicle} with: ${mockUpdateVehicleDto}`,
+    );
   });
 
   it('should not allow updating vehicles identifying info', async () => {
@@ -224,10 +241,9 @@ describe('VehiclesService', () => {
     expect(cacheSpy).toHaveBeenCalledWith(
       getCacheKey(mockUserVehicle.id, MOCK_USER_ID),
     );
-  });
 
-  // add following to e2e
-  it('should create a new vehicle', async () => {});
-  it('should throw 409 for creating vehicle with overlapping VIN', () => {});
-  it('should throw 404 for vehicle not found', () => {});
+    expect(logger).toHaveBeenCalledWith(
+      `Removed vehicle by id: ${mockUserVehicle.id}`,
+    );
+  });
 });

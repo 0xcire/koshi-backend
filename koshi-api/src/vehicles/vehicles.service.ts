@@ -19,6 +19,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheableEntities, ONE_HOUR_AS_MS } from '../types';
 import { getCacheKey } from '../common/utils/cache-key';
+import { VehicleLog } from './types';
 
 @Injectable()
 export class VehiclesService {
@@ -63,11 +64,11 @@ export class VehiclesService {
     );
 
     if (cachedVehicles) {
-      this.logger.log('Cache hit - Vehicles');
+      this.logger.log(VehicleLog.CacheHit);
       return { vehicles: cachedVehicles };
     }
 
-    this.logger.log('Cache miss - Vehicles');
+    this.logger.log(VehicleLog.CacheMiss);
 
     const vehicles = await this.vehiclesRepository.findAll({
       where: { user: userId },
@@ -79,7 +80,7 @@ export class VehiclesService {
       ONE_HOUR_AS_MS,
     );
 
-    this.logger.log(`Found ${vehicles.length} vehicles for user: å${userId}`);
+    this.logger.log(`Found ${vehicles.length} vehicles for user: ${userId}`);
     return { vehicles };
   }
 
@@ -89,9 +90,11 @@ export class VehiclesService {
     );
 
     if (cachedVehicle) {
-      this.logger.log('Serving cached vehicle');
+      this.logger.log(VehicleLog.CacheHit);
       return { vehicle: cachedVehicle };
     }
+
+    this.logger.log(VehicleLog.CacheMiss);
 
     const findOneOrFailPromise = this.vehiclesRepository.findOneOrFail({
       id,
@@ -147,7 +150,7 @@ export class VehiclesService {
     );
 
     this.logger.log(
-      `Updating existing vehicle: ${vehicle} with new data: ${updateVehicleDto}`,
+      `Updating existing vehicle: ${vehicle} with: ${updateVehicleDto}`,
     );
 
     return { vehicle: updatedVehicle };

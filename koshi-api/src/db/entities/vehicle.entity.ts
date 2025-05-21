@@ -6,7 +6,7 @@ import { User } from './user.entity';
 @Entity({ tableName: 'vehicles' })
 export class Vehicle extends BaseEntity {
   @PrimaryKey({ type: 'string', comment: 'Primary key for the vehicle' })
-  id: string = randomUUID(); // TODO: this does not do anything?
+  id: string = randomUUID();
 
   @Property({
     type: 'varchar',

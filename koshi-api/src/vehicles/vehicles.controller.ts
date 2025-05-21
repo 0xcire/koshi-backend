@@ -66,13 +66,9 @@ export class VehiclesController {
     examples: {
       updatedCar: {
         value: {
-          year: 2025,
-          make: 'Acura',
-          model: 'Integra',
-          fuelType: 'e85',
-          fuelTankSize: 13.5,
-          appxFuelEfficiency: 20.2,
-          mileage: 175_000,
+          fuelTankSize: 17.5,
+          appxFuelEfficiency: 25.2,
+          mileage: 275_000,
         },
       },
     },
