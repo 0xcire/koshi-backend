@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import {
@@ -17,6 +23,7 @@ import { getCacheKey } from '../common/utils/cache-key';
 @Injectable()
 export class VehiclesService {
   private readonly logger = new Logger(VehiclesService.name);
+  private readonly FORBIDDEN_UPDATE_COLUMNS = ['make', 'model', 'year', 'vin'];
 
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
@@ -52,12 +59,12 @@ export class VehiclesService {
    */
   async findAll(userId: string) {
     const cachedVehicles = await this.cacheManager.get(
-      JSON.stringify(getCacheKey(CacheableEntities.Vehicles, userId)),
+      getCacheKey(CacheableEntities.Vehicles, userId),
     );
 
     if (cachedVehicles) {
       this.logger.log('Cache hit - Vehicles');
-      return cachedVehicles;
+      return { vehicles: cachedVehicles };
     }
 
     this.logger.log('Cache miss - Vehicles');
@@ -67,7 +74,7 @@ export class VehiclesService {
     });
 
     await this.cacheManager.set(
-      JSON.stringify(getCacheKey(CacheableEntities.Vehicles, userId)),
+      getCacheKey(CacheableEntities.Vehicles, userId),
       vehicles,
       ONE_HOUR_AS_MS,
     );
@@ -78,7 +85,7 @@ export class VehiclesService {
 
   async findOne(userId: string, id: string) {
     const cachedVehicle: Vehicle | null = await this.cacheManager.get(
-      JSON.stringify(getCacheKey(id, userId)),
+      getCacheKey(id, userId),
     );
 
     if (cachedVehicle) {
@@ -103,7 +110,7 @@ export class VehiclesService {
     }
 
     await this.cacheManager.set(
-      JSON.stringify(getCacheKey(vehicle.id, userId)),
+      getCacheKey(vehicle.id, userId),
       vehicle,
       ONE_HOUR_AS_MS,
     );
@@ -114,6 +121,16 @@ export class VehiclesService {
   }
 
   async update(userId: string, id: string, updateVehicleDto: UpdateVehicleDto) {
+    if (
+      Object.keys(updateVehicleDto).some((key) =>
+        this.FORBIDDEN_UPDATE_COLUMNS.includes(key),
+      )
+    ) {
+      throw new ConflictException(
+        "Can't update given fields. Are you trying to enter a new vehicle?",
+      );
+    }
+
     const { vehicle } = await this.findOne(userId, id);
 
     const updatedVehicle = this.vehiclesRepository.assign(
@@ -124,7 +141,7 @@ export class VehiclesService {
     await this.em.flush();
 
     await this.cacheManager.set(
-      JSON.stringify(getCacheKey(vehicle.id, userId)),
+      getCacheKey(vehicle.id, userId),
       vehicle,
       ONE_HOUR_AS_MS,
     );
@@ -140,6 +157,6 @@ export class VehiclesService {
     this.logger.log(`Removed vehicle by id: ${id}`);
 
     await this.vehiclesRepository.nativeDelete({ id });
-    await this.cacheManager.del(JSON.stringify(getCacheKey(id, userId)));
+    await this.cacheManager.del(getCacheKey(id, userId));
   }
 }
