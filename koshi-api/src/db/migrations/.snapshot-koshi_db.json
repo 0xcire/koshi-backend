@@ -1,0 +1,1033 @@
+{
+  "namespaces": [
+    "public"
+  ],
+  "name": "public",
+  "tables": [
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "comment": "Numerical ID from NREL dataset",
+          "mappedType": "integer"
+        },
+        "access_code": {
+          "name": "access_code",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Public or private",
+          "mappedType": "string"
+        },
+        "access_days_time": {
+          "name": "access_days_time",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "format: 24 hours daily || 6am-11pm M-Sat, 7am-11pm Sun || 6am-10pm daily",
+          "mappedType": "string"
+        },
+        "access_detail_code": {
+          "name": "access_detail_code",
+          "type": "varchar(32)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 32,
+          "comment": "code denoting access. mapped in application",
+          "mappedType": "string"
+        },
+        "cards_accepted": {
+          "name": "cards_accepted",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "comment": "Space separated list of accepted payment types. Mapped in application",
+          "mappedType": "string"
+        },
+        "date_last_confirmed": {
+          "name": "date_last_confirmed",
+          "type": "varchar(32)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 32,
+          "comment": "The date the station's details were last confirmed.",
+          "mappedType": "string"
+        },
+        "expected_date": {
+          "name": "expected_date",
+          "type": "varchar(32)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 32,
+          "comment": "Planned opening date or re-opening for closed stations",
+          "mappedType": "string"
+        },
+        "fuel_type_code": {
+          "name": "fuel_type_code",
+          "type": "varchar(8)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 8,
+          "comment": "Station fuel type. Here, only 'E85'",
+          "mappedType": "string"
+        },
+        "maximum_vehicle_class": {
+          "name": "maximum_vehicle_class",
+          "type": "varchar(2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 2,
+          "comment": "maximum vehicle class size that can access station",
+          "mappedType": "string"
+        },
+        "open_date": {
+          "name": "open_date",
+          "type": "varchar(32)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 32,
+          "comment": "Station open date",
+          "mappedType": "string"
+        },
+        "owner_type_code": {
+          "name": "owner_type_code",
+          "type": "varchar(2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 2,
+          "comment": "station ownership type. mapped in application",
+          "mappedType": "string"
+        },
+        "restricted_access": {
+          "name": "restricted_access",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "comment": "For public stations, an indication of whether the station has restricted access",
+          "mappedType": "boolean"
+        },
+        "status_code": {
+          "name": "status_code",
+          "type": "varchar(1)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 1,
+          "comment": "current status of station. mapped in application",
+          "mappedType": "string"
+        },
+        "facility_type": {
+          "name": "facility_type",
+          "type": "varchar(32)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 32,
+          "comment": "The type of facility at which the station is located, given as code values and mapped in app",
+          "mappedType": "string"
+        },
+        "station_name": {
+          "name": "station_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Name of station",
+          "mappedType": "string"
+        },
+        "station_phone": {
+          "name": "station_phone",
+          "type": "varchar(32)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 32,
+          "comment": "Name of station",
+          "mappedType": "string"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "comment": "When station details were last updated",
+          "mappedType": "datetime"
+        },
+        "geocode_status": {
+          "name": "geocode_status",
+          "type": "varchar(5)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 5,
+          "comment": "rating indicating accuracy of lat/lon coordinates. mapped in app",
+          "mappedType": "string"
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "real",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "comment": "latitude coordinate point",
+          "mappedType": "float"
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "real",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "comment": "latitude coordinate point",
+          "mappedType": "float"
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "City of station",
+          "mappedType": "string"
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar(2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 2,
+          "comment": "State of station",
+          "mappedType": "string"
+        },
+        "country": {
+          "name": "country",
+          "type": "varchar(2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 2,
+          "comment": "Country of station",
+          "mappedType": "string"
+        },
+        "street_address": {
+          "name": "street_address",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "The street address of the station's location.",
+          "mappedType": "string"
+        },
+        "zip": {
+          "name": "zip",
+          "type": "varchar(5)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 5,
+          "comment": "zipcode",
+          "mappedType": "string"
+        },
+        "plus4": {
+          "name": "plus4",
+          "type": "varchar(4)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 4,
+          "comment": "plus 4 of zipcode. US only",
+          "mappedType": "string"
+        },
+        "intersection_directions": {
+          "name": "intersection_directions",
+          "type": "varchar(510)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 510,
+          "comment": "Brief additional information about how to locate the station",
+          "mappedType": "string"
+        },
+        "e85blender_pump": {
+          "name": "e85blender_pump",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "comment": "For E85 stations, an indication of whether the station has a blender pump on site",
+          "mappedType": "boolean"
+        },
+        "e85other_ethanol_blends": {
+          "name": "e85other_ethanol_blends",
+          "type": "text[]",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "comment": "For E85 stations, an array of strings identifying the range(s) of blends other than E85 available",
+          "mappedType": "array"
+        }
+      },
+      "name": "stations",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "stations_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "last_updated_at": {
+          "name": "last_updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "comment": "timestamp for most recent sync run from nrel to local db",
+          "mappedType": "datetime"
+        }
+      },
+      "name": "sync_run",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "last_updated_at"
+          ],
+          "composite": false,
+          "keyName": "sync_run_last_updated_at_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "sync_run_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Primary key for the user",
+          "mappedType": "string"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "comment": "Timestamp of when the record was created",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "comment": "comment: 'Timestamp of the last user record update',",
+          "mappedType": "datetime"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "User's full name",
+          "mappedType": "string"
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Unique email address",
+          "mappedType": "string"
+        },
+        "email_verified": {
+          "name": "email_verified",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "comment": "Whether the email is verified",
+          "mappedType": "boolean"
+        },
+        "image": {
+          "name": "image",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "comment": "User's profile image URL",
+          "mappedType": "string"
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "comment": "Unique user identifier for display or login",
+          "mappedType": "string"
+        },
+        "display_username": {
+          "name": "display_username",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "comment": "Publicly visible username",
+          "mappedType": "string"
+        },
+        "role": {
+          "name": "role",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "comment": "User's role or permission level (e.g., admin, user)",
+          "mappedType": "string"
+        },
+        "banned": {
+          "name": "banned",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "comment": "Whether the user is banned from the system",
+          "mappedType": "boolean"
+        },
+        "ban_reason": {
+          "name": "ban_reason",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "comment": "Reason for the user's ban",
+          "mappedType": "string"
+        },
+        "ban_expires": {
+          "name": "ban_expires",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6,
+          "comment": "Date when the user's ban expires",
+          "mappedType": "datetime"
+        }
+      },
+      "name": "users",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "email"
+          ],
+          "composite": false,
+          "keyName": "users_email_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "email"
+          ],
+          "composite": false,
+          "keyName": "users_email_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "username"
+          ],
+          "composite": false,
+          "keyName": "users_username_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "users_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Primary key for the account",
+          "mappedType": "string"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "comment": "Timestamp of when the record was created",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "comment": "comment: 'Timestamp of the last user record update',",
+          "mappedType": "datetime"
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Provider-specific account ID",
+          "mappedType": "string"
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Identifier for the provider (e.g., Google, GitHub)",
+          "mappedType": "string"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Foreign key to user.id",
+          "mappedType": "string"
+        },
+        "access_token": {
+          "name": "access_token",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "comment": "OAuth access token",
+          "mappedType": "string"
+        },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "comment": "OAuth refresh token",
+          "mappedType": "string"
+        },
+        "id_token": {
+          "name": "id_token",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "comment": "OAuth ID token for identity verification",
+          "mappedType": "string"
+        },
+        "access_token_expires_at": {
+          "name": "access_token_expires_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6,
+          "comment": "Expiration timestamp for the access token",
+          "mappedType": "datetime"
+        },
+        "refresh_token_expires_at": {
+          "name": "refresh_token_expires_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6,
+          "comment": "Expiration timestamp for the refresh token",
+          "mappedType": "datetime"
+        },
+        "scope": {
+          "name": "scope",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "comment": "OAuth scopes granted to the account",
+          "mappedType": "string"
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "comment": "Hashed password for password-based accounts",
+          "mappedType": "string"
+        }
+      },
+      "name": "accounts",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "userId"
+          ],
+          "composite": false,
+          "keyName": "accounts_userId_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "accounts_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "accounts_userId_foreign": {
+          "constraintName": "accounts_userId_foreign",
+          "columnNames": [
+            "userId"
+          ],
+          "localTableName": "public.accounts",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.users",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Primary key for the vehicle",
+          "mappedType": "string"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "comment": "Timestamp of when the record was created",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "comment": "comment: 'Timestamp of the last user record update',",
+          "mappedType": "datetime"
+        },
+        "make": {
+          "name": "make",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Make of user's car",
+          "mappedType": "string"
+        },
+        "model": {
+          "name": "model",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Model of user's car",
+          "mappedType": "string"
+        },
+        "year": {
+          "name": "year",
+          "type": "smallint",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "comment": "year car was built",
+          "mappedType": "smallint"
+        },
+        "fuel_type": {
+          "name": "fuel_type",
+          "type": "varchar(16)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 16,
+          "comment": "Fuel type for given car. Currently only ethanol",
+          "mappedType": "string"
+        },
+        "fuel_tank_size": {
+          "name": "fuel_tank_size",
+          "type": "real",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "comment": "Tank size. Denoted in gallons.",
+          "mappedType": "float"
+        },
+        "appx_fuel_efficiency": {
+          "name": "appx_fuel_efficiency",
+          "type": "real",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "comment": "Avg fuel efficiency denoted in mpg",
+          "mappedType": "float"
+        },
+        "mileage": {
+          "name": "mileage",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "comment": "Current mileage of vehicle",
+          "mappedType": "integer"
+        },
+        "vin": {
+          "name": "vin",
+          "type": "varchar(17)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 17,
+          "comment": "VIN of vehicle.",
+          "mappedType": "string"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        }
+      },
+      "name": "vehicles",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "vin"
+          ],
+          "composite": false,
+          "keyName": "vehicles_vin_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "vehicles_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "vehicles_user_id_foreign": {
+          "constraintName": "vehicles_user_id_foreign",
+          "columnNames": [
+            "user_id"
+          ],
+          "localTableName": "public.vehicles",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.users",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Primary key for the verification record",
+          "mappedType": "string"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "comment": "Timestamp of when the record was created",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "comment": "comment: 'Timestamp of the last user record update',",
+          "mappedType": "datetime"
+        },
+        "identifier": {
+          "name": "identifier",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Identifier for the verification (e.g., email or user ID)",
+          "mappedType": "string"
+        },
+        "value": {
+          "name": "value",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "comment": "Verification token or code",
+          "mappedType": "string"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "comment": "Expiration timestamp for the verification token",
+          "mappedType": "datetime"
+        }
+      },
+      "name": "verifications",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "verifications_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    }
+  ],
+  "nativeEnums": {}
+}

@@ -1,9 +1,9 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20250519032526_vehicles extends Migration {
+export class Migration20250521044643_vehicles extends Migration {
   override async up(): Promise<void> {
     this.addSql(
-      `create table "vehicles" ("id" varchar(255) not null, "created_at" timestamptz not null, "updated_at" timestamptz not null, "make" varchar(255) not null, "model" varchar(255) not null, "year" smallint not null, "fuel_type" varchar(16) not null, "fuel_tank_size" real not null, "appx_fuel_efficiency" real not null, "mileage" int not null, "vin" varchar(17) null, "user_id" varchar(255) not null, constraint "vehicles_pkey" primary key ("id"));`,
+      `create table "vehicles" ("id" varchar(255) not null, "created_at" timestamptz not null, "updated_at" timestamptz not null, "make" varchar(255) not null, "model" varchar(255) not null, "year" smallint not null, "fuel_type" varchar(16) not null, "fuel_tank_size" real not null, "appx_fuel_efficiency" real not null, "mileage" int not null, "vin" varchar(17) not null, "user_id" varchar(255) not null, constraint "vehicles_pkey" primary key ("id"));`,
     );
     this.addSql(
       `comment on column "vehicles"."id" is 'Primary key for the vehicle';`,
@@ -34,6 +34,9 @@ export class Migration20250519032526_vehicles extends Migration {
       `comment on column "vehicles"."mileage" is 'Current mileage of vehicle';`,
     );
     this.addSql(`comment on column "vehicles"."vin" is 'VIN of vehicle.';`);
+    this.addSql(
+      `alter table "vehicles" add constraint "vehicles_vin_unique" unique ("vin");`,
+    );
 
     this.addSql(
       `alter table "vehicles" add constraint "vehicles_user_id_foreign" foreign key ("user_id") references "users" ("id") on update cascade on delete cascade;`,

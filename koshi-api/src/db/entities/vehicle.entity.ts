@@ -6,7 +6,7 @@ import { User } from './user.entity';
 @Entity({ tableName: 'vehicles' })
 export class Vehicle extends BaseEntity {
   @PrimaryKey({ type: 'string', comment: 'Primary key for the vehicle' })
-  id: string = randomUUID();
+  id: string = randomUUID(); // TODO: this does not do anything?
 
   @Property({
     type: 'varchar',
@@ -33,19 +33,18 @@ export class Vehicle extends BaseEntity {
 
   @Property({
     type: 'varchar',
-    length: 255,
+    length: 16,
     nullable: false,
     comment: 'Fuel type for given car. Currently only ethanol',
   })
   fuelType!: string;
 
   @Property({
-    type: 'varchar',
-    length: 255,
+    type: 'real',
     nullable: false,
     comment: 'Tank size. Denoted in gallons.',
   })
-  fuelTankSize!: string;
+  fuelTankSize!: number;
 
   @Property({
     type: 'real',
@@ -64,11 +63,17 @@ export class Vehicle extends BaseEntity {
   @Property({
     type: 'varchar',
     length: 17,
-    nullable: true,
+    unique: true,
+    nullable: false,
     comment: 'VIN of vehicle.',
   })
-  vin?: number;
+  vin!: string;
 
-  @ManyToOne({ entity: () => User, nullable: false, deleteRule: 'cascade' })
+  @ManyToOne({
+    serializer: (val) => val,
+    entity: () => User,
+    nullable: false,
+    deleteRule: 'cascade',
+  })
   user!: User;
 }
