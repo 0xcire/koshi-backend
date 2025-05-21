@@ -32,11 +32,10 @@ import {
 import { ONE_HOUR_AS_MS } from '@/types';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import SuperJSON from 'superjson';
 
 /*
  *  Service to handle sync between local db and nrel db for e85 fuel stations - cut down api requests
- *  Runs update check every week and acts accordingly
+ *  Runs update check every day and acts accordingly
  *  provides fuel station data for display on map and routing
  * */
 @Injectable()
@@ -90,6 +89,8 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
         this.logger.error(error.response?.data);
 
         if (error.response?.status === 429) {
+          // TODO: can't imagine I hit the RL but handle gracefully in combination with axios-retry
+          this.logger.error('Hit Rate Limit on NREL Upstream');
         }
       }
 
@@ -100,12 +101,11 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
   }
 
   async getAllStations(): Promise<Station[]> {
-    const cachedStations: string | null =
-      await this.cacheManager.get('stations');
+    const cachedStations = await this.cacheManager.get('stations');
 
     if (cachedStations) {
       this.logger.log(NrelLog.CacheHit);
-      return SuperJSON.parse(cachedStations);
+      return cachedStations as Station[];
     }
 
     this.logger.log(NrelLog.CacheMiss);
@@ -184,11 +184,7 @@ export class NrelService implements OnApplicationBootstrap, INrelService {
 
   private async writeStationsToCache(stations: Station[]): Promise<void> {
     this.logger.log(NrelLog.WriteToCache);
-    await this.cacheManager.set(
-      'stations',
-      SuperJSON.stringify(stations),
-      ONE_HOUR_AS_MS,
-    );
+    await this.cacheManager.set('stations', stations, ONE_HOUR_AS_MS);
   }
 
   /**

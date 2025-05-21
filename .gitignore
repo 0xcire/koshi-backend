@@ -20,3 +20,5 @@ pids
 .qodo
 
 containers/pg/init.sql
+
+node_modules/

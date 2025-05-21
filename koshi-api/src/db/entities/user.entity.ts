@@ -1,6 +1,14 @@
-import { Entity, Index, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 import { randomUUID } from 'node:crypto';
 import { BaseEntity } from './base.entity';
+import { Vehicle } from './vehicle.entity';
 
 @Entity({ tableName: 'users' })
 export class User extends BaseEntity {
@@ -66,4 +74,9 @@ export class User extends BaseEntity {
     comment: "Date when the user's ban expires",
   })
   banExpires?: Date;
+
+  @OneToMany(() => Vehicle, (vehicle) => vehicle.user, {
+    orphanRemoval: true,
+  })
+  vehicles = new Collection<Vehicle>(this);
 }

@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger as NestLogger } from '@nestjs/common';
+import { Logger as NestLogger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import type { INestApplication } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { Logger } from 'nestjs-pino';
@@ -10,6 +10,8 @@ import { NodeEnvironment } from './types';
 import { Config } from './common/config/types';
 import { configInstance } from './common/config';
 import { validateConfig } from './common/config/config-validator';
+import { auth } from './auth/auth';
+import { ComponentsObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
 export async function simpleApp() {
   return await NestFactory.create(AppModule);
@@ -28,8 +30,8 @@ async function bootstrap() {
     bufferLogs: true,
   });
   app.useLogger(app.get(Logger));
-
   app.enableShutdownHooks();
+  app.useGlobalPipes(new ValidationPipe());
 
   await setUpSwaggerUI(app);
 
@@ -57,6 +59,50 @@ async function setUpSwaggerUI(app: INestApplication<any>) {
     .build();
 
   const nestDocument = SwaggerModule.createDocument(app, config);
+  const betterAuthOpenAPI = await auth.api.generateOpenAPISchema();
 
-  SwaggerModule.setup('swagger-ui', app, nestDocument);
+  const paths = Object.fromEntries(
+    Object.entries(betterAuthOpenAPI.paths).map((path) => {
+      return [`/api/auth${path[0]}`, path[1]];
+    }),
+  );
+
+  for (const path in paths) {
+    for (const method in paths[path]) {
+      //@ts-expect-error mmm
+      paths[path][method].tags = ['better auth'];
+
+      if (path.includes('admin')) {
+        //@ts-expect-error mmm
+        paths[path][method].tags = ['better auth - admin'];
+      }
+    }
+  }
+
+  const document: OpenAPIObject = {
+    openapi: nestDocument.openapi,
+    paths: {
+      ...nestDocument.paths,
+      ...(paths as OpenAPIObject['paths']),
+      ...(nestDocument.paths['/api/auth/{path}'] && {}),
+    },
+    info: nestDocument.info,
+    tags: nestDocument.tags,
+    servers: nestDocument.servers,
+    components: {
+      schemas: {
+        ...nestDocument.components?.schemas,
+        ...betterAuthOpenAPI.components.schemas,
+      },
+      securitySchemes: {
+        ...(betterAuthOpenAPI.components
+          .securitySchemes as ComponentsObject['securitySchemes']),
+      },
+    },
+    security: betterAuthOpenAPI.security,
+  };
+
+  delete document.paths['/api/auth/{path}'];
+
+  SwaggerModule.setup('swagger-ui', app, document);
 }

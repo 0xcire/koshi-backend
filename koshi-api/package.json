@@ -44,6 +44,7 @@
     "better-auth-mikro-orm": "^0.3.0",
     "cache-manager": "^6.4.3",
     "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "ioredis": "^5.6.1",
     "nestjs-pino": "^4.4.0",
     "nodemailer": "^7.0.2",
