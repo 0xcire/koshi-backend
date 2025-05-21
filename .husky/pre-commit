@@ -1,1 +1,0 @@
-cd koshi-api && pnpm test
